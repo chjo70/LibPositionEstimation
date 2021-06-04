@@ -24,7 +24,7 @@ public:
 	CDistanceLeastSquare(void);
 	~CDistanceLeastSquare(void);
 
-	bool Run( SELPE_RESULT *pResult, double *pLatitude, double *pLongitude, double *pLob, int nLob );
+	bool Run( SELPE_RESULT *pResult, double *pLatitude, double *pLongitude, double *pLob, unsigned int nLob );
 	bool CalCEP( SELPE_RESULT *pResult, SELABTDATA_EXT *pABTExtData );
 
 	void CalCEP( SELPositionEstimationResult *pResult, SELPE_RESULT *pEmitterXY, SELPE_RESULT *pSensorXY, double *pTrueLob, int nEle );

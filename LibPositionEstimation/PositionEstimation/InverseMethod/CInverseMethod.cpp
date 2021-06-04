@@ -11,7 +11,7 @@
 
 #include "CInverseMethod.h"
 
-CInverseMethod*  CInverseMethod::m_pInstance = 0;				///< 정적 초기화
+//CInverseMethod*  CInverseMethod::m_pInstance = nullptr;				///< 정적 초기화
 
 
 /**
@@ -30,28 +30,6 @@ CInverseMethod::CInverseMethod()
 	m_dFwdAz = 0.0;
 	m_dRevAz = 0.0;
 
-	double lat1, lon1, lat2, lon2;
-
-	// 타겟 : 왕산
-	lat2 = 37.4692;
-	lon2 = 126.3625;
-
-	double doa;
-
-	// 신불
-	lat1 = 37.4528;
-	lon1 = 126.4839;
-	doa = GCAzimuth(lat1, lon1, lat2, lon2, true );
-
-	// 관제수신소
-	lat1 = 37.4859;
-	lon1 = 126.4587;
-	doa = GCAzimuth(lat1, lon1, lat2, lon2, true );
-
-	// 소방대분소
-	lat1 = 37.45348;
-	lon1 = 126.42333;
-	doa = GCAzimuth(lat1, lon1, lat2, lon2, true );
 }
 
 /**
@@ -70,41 +48,6 @@ CInverseMethod::~CInverseMethod( )
 
 }
 
-/**
- * @brief     Finalize
- * @param     void
- * @return    void
- * @exception
- * @author    조철희 (churlhee.jo@lignex1.com)
- * @version   0.0.1
- * @date      2017-03-07, 오후 6:49
- * @warning
- */
-void CInverseMethod::Finalize()
-{
-	delete m_pInstance;
-}
-
-
-//////////////////////////////////////////////////////////////////////////
-/*!
- * @brief     객체를 생성한다.
- * @param     void
- * @return    CInverseMethod *
- * @version   0.0.1
- * @exception 예외사항을 입력해주거나 '해당사항 없음' 으로 해주세요.
- * @author    조철희 (churlhee.jo@lignex1.com)
- * @date      2013-09-09 오후 8:56
- * @warning
- */
-CInverseMethod* CInverseMethod::GetInstance()
-{
-	if( m_pInstance == NULL ) {
-		m_pInstance = new CInverseMethod();
-	}
-
-	return m_pInstance;
-}
 
 /**
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,12 +86,13 @@ CInverseMethod* CInverseMethod::GetInstance()
  */
 bool CInverseMethod::VincentyInverse( sEllipsoid *e, double lat1, double lon1, double lat2, double lon2 )	//#FA_Q_4020_T1
 {
-
-	lat1 = lat1 * D2R;
-	lon1 = lon1 * D2R;
-	lat2 = lat2 * D2R;
-	lon2 = lon2 * D2R;
-
+	//신뢰성. 파싱 에러가 떠서 주석처리함. 추후 주석 풀것. 윤현철.
+	
+	lat1 = lat1 * (double)(M_PI / 180.0);
+	lon1 = lon1 * (double)(M_PI / 180.0);
+	lat2 = lat2 * (double)(M_PI / 180.0);
+	lon2 = lon2 * (double)(M_PI / 180.0);
+	
 	double L = (lon2 - lon1);
 	double U1 = atan((1 - e->dFlatness) * tan(lat1));
 	double U2 = atan((1 - e->dFlatness) * tan(lat2));
@@ -159,6 +103,7 @@ bool CInverseMethod::VincentyInverse( sEllipsoid *e, double lat1, double lon1, d
 	int iterLimit = 100;
 	double cosSqAlpha, cosSigma, sigma, cos2SigmaM, sinLambda, sinSigma, cosLambda, sinAlpha;
 	double eps = 1000;
+	bool bRtn = false;
 	do
 	{
 		sinLambda = sin(lambda);
@@ -167,7 +112,7 @@ bool CInverseMethod::VincentyInverse( sEllipsoid *e, double lat1, double lon1, d
 		if ( ! ( sinSigma > 0 || sinSigma < 0 ) )
 		{	//DTEC_Else
 			m_dDistance = 0.0;
-			return true;
+			bRtn = true;
 		}
 
 		cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
@@ -180,37 +125,44 @@ bool CInverseMethod::VincentyInverse( sEllipsoid *e, double lat1, double lon1, d
 		lambdaP = lambda;
 		lambda = L + (1 - C) * e->dFlatness * sinAlpha * (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * ( -1 + 2 * cos2SigmaM * cos2SigmaM)));
 		eps = fabs(lambda - lambdaP);
+
+		--iterLimit;
 	}
-	while (eps > 1e-12 && --iterLimit > 0);
+	while (eps > 1e-12 && iterLimit > 0);
 
-	if (iterLimit == 0) { //DTEC_Else
-		return false; // formula failed to converge
+	if (!bRtn)
+	{
+		if (iterLimit == 0) 
+		{ //DTEC_Else
+			//DoNothing();//return false; // formula failed to converge
+		}
+		else
+		{
+			double uSq = cosSqAlpha * (e->dMajorAxis * e->dMajorAxis - e->dMinorAxis * e->dMinorAxis) / (e->dMinorAxis * e->dMinorAxis);
+			double A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
+			double B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
+			double deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
+			double _s = e->dMinorAxis * A * (sigma - deltaSigma);
+
+			double _fwdAz = atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda); //y,x
+			double _revAz = atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda);
+
+			if (_fwdAz < 0.0) { //DTEC_Else
+				_fwdAz = _fwdAz + M_PI + M_PI;
+			}
+
+			if (_revAz < 0.0) { //DTEC_Else
+				_revAz = _revAz + M_PI + M_PI;
+			}
+
+			m_dDistance = _s;
+			m_dFwdAz = _fwdAz;
+			m_dRevAz = _revAz;
+			bRtn = true;
+		}
 	}
-
-	double uSq = cosSqAlpha * (e->dMajorAxis * e->dMajorAxis - e->dMinorAxis * e->dMinorAxis) / (e->dMinorAxis * e->dMinorAxis);
-	double A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)));
-	double B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)));
-	double deltaSigma = B * sinSigma * ( cos2SigmaM + B / 4 * ( cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM ) - B / 6 * cos2SigmaM * ( -3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)));
-	double _s = e->dMinorAxis * A * (sigma - deltaSigma);
-
-	double _fwdAz = atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda); //y,x
-	double _revAz = atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda);
-
-	if( _fwdAz < 0.0 ) { //DTEC_Else
-		_fwdAz = _fwdAz + M_PI + M_PI;
-	}
-
-	if( _revAz < 0.0 ) { //DTEC_Else
-		_revAz = _revAz + M_PI + M_PI;
-	}
-
-	m_dDistance =  _s;
-	m_dFwdAz = _fwdAz;
-	m_dRevAz = _revAz;
-
-	return true;
+	return bRtn;
 }
-
 //////////////////////////////////////////////////////////////////////////
 /*!
  * @brief     도분초에 대한 방위각과 거리를 리턴
@@ -237,8 +189,10 @@ int CInverseMethod::VincentyInverse( SELDISTLOB *pResult, double lat1, double lo
 
 	bRet = VincentyInverse( & stEllipsoid, lat1, lon1, lat2, lon2 );
 	pResult->dDistance = m_dDistance;
-	pResult->fwdlob = m_dFwdAz * R2D;
-	pResult->revlob = m_dRevAz * R2D;
+	//신뢰성. 파싱 에러가 떠서 주석처리함. 추후 주석 풀것. 윤현철.
+
+	pResult->fwdlob = m_dFwdAz * (double)(180.0 / M_PI);
+	pResult->revlob = m_dRevAz * (double)(180.0 / M_PI);
 
 	return bRet;
 
@@ -261,7 +215,7 @@ double CInverseMethod::EllipsoidDistance(double lat1, double lon1, double lat2, 
 {
 	double dDistance = 0.0;
 	double  faz, baz;
-	double  r = 1.0 - GEO::FLATTENING;
+	double  r = 1.0 - FLATTENING;
 	double  tu1, tu2, cu1, su1, cu2, x, sx, cx, sy, cy, y, sa, c2a, cz, e, c, d;
 	double  cosy1, cosy2;
 	dDistance = 0.0;
@@ -272,10 +226,10 @@ double CInverseMethod::EllipsoidDistance(double lat1, double lon1, double lat2, 
 	}
 	else {
 
-		lon1 *= GEO::DE2RA;
-		lon2 *= GEO::DE2RA;
-		lat1 *= GEO::DE2RA;
-		lat2 *= GEO::DE2RA;
+		lon1 *= DE2RA;
+		lon2 *= DE2RA;
+		lat1 *= DE2RA;
+		lat2 *= DE2RA;
 
 		cosy1 = cos(lat1);
 		cosy2 = cos(lat2);
@@ -315,11 +269,11 @@ double CInverseMethod::EllipsoidDistance(double lat1, double lon1, double lat2, 
 				cz = -cz / c2a + cy;
 			}
 			e = cz * cz * 2. - 1.0;
-			c = ((-3.0 * c2a + 4.0) * GEO::FLATTENING + 4.0) * c2a * GEO::FLATTENING / 16.0;
+			c = ((-3.0 * c2a + 4.0) * FLATTENING + 4.0) * c2a * FLATTENING / 16.0;
 			d = x;
 			x = ((e * cy * c + cz) * sy * c + y) * sa;
-			x = (1.0 - c) * x * GEO::FLATTENING + lon2 - lon1;
-		} while(fabs(d - x) > GEO::EPS);
+			x = (1.0 - c) * x * FLATTENING + lon2 - lon1;
+		} while(fabs(d - x) > EPS);
 
 		x = sqrt((1.0 / r / r - 1.0) * c2a + 1.0) + 1.0;
 		x = (x - 2.0) / x;
@@ -328,7 +282,7 @@ double CInverseMethod::EllipsoidDistance(double lat1, double lon1, double lat2, 
 		d = (0.375 * x * x - 1.0) * x;
 		x = e * cy;
 		dDistance = 1.0 - e - e;
-		dDistance = ((((sy * sy * 4.0 - 3.0) * dDistance * cz * d / 6.0 - x) * d / 4.0 + cz) * sy * d + y) * c * GEO::ERAD * r;
+		dDistance = ((((sy * sy * 4.0 - 3.0) * dDistance * cz * d / 6.0 - x) * d / 4.0 + cz) * sy * d + y) * c * ERAD * r;
 	}
 
 	return dDistance;
@@ -356,14 +310,15 @@ double CInverseMethod::GCAzimuth(double lat1, double lon1, double lat2, double l
 	INT32 ilon1 = (INT32)(0.50 + lon1 * 360000.0);
 	INT32 ilon2 = (INT32)(0.50 + lon2 * 360000.0);
 
-	lat1 *= GEO::DE2RA;
-	lon1 *= GEO::DE2RA;
-	lat2 *= GEO::DE2RA;
-	lon2 *= GEO::DE2RA;
+	lat1 *= DE2RA;
+	lon1 *= DE2RA;
+	lat2 *= DE2RA;
+	lon2 *= DE2RA;
 
 	if ((ilat1 == ilat2) && (ilon1 == ilon2))
 	{	//DTEC_Else
-		return result;
+		//return result;
+		//DoNothing();
 	}
 	else if (ilon1 == ilon2)
 	{	//DTEC_Else
@@ -375,13 +330,13 @@ double CInverseMethod::GCAzimuth(double lat1, double lon1, double lat2, double l
 	{
 		if( bInitialBearing == true ) {
 			double angle = atan2(cos(lat2) * sin(lon2 - lon1), sin(lat2) * cos(lat1) - sin(lat1) * cos(lat2) * cos(lon2 - lon1));
-			result = (angle * GEO::RA2DE);
+			result = (angle * RA2DE);
 			result += ( 360.0 * 2 );
 			result = fmod( result, 360.0 );
 		}
 		else {
 			double angle = atan2(cos(lat1) * sin(lon1 - lon2), sin(lat1) * cos(lat2) - sin(lat2) * cos(lat1) * cos(lon1 - lon2));
-			result = (angle * GEO::RA2DE);
+			result = (angle * RA2DE);
 			result += ( 360.0 * 2 );
 			result += ( 180.0 );
 			result = fmod( result, 360.0 );
@@ -411,10 +366,10 @@ double CInverseMethod::GCDistance(double lat1, double lon1, double lat2, double 
 	double result = 0.0;
 	double dLatSin, dLonSin;
 
-	lat1 *= GEO::DE2RA;
-	lon1 *= GEO::DE2RA;
-	lat2 *= GEO::DE2RA;
-	lon2 *= GEO::DE2RA;
+	lat1 *= DE2RA;
+	lon1 *= DE2RA;
+	lat2 *= DE2RA;
+	lon2 *= DE2RA;
 
 	dLat = ( lat2 - lat1 );
 	dLon = ( lon2 - lon1 );

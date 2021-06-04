@@ -87,18 +87,18 @@ public:
   // constructor
   CMatrix();
   // constructor
-  CMatrix(const int row_count, const int column_count);
+  CMatrix(const unsigned int r, const unsigned int c);
   // assignment operator
   CMatrix(const CMatrix& a);
 
   // index operator. You can use this class like myCMatrix(col, row)
   // the indexes are one-based, not zero based.
-  double& operator()(const int r, const int c);
+  double& operator()(const unsigned int r, const unsigned int c);
 
   // index operator. You can use this class like myCMatrix.get(col, row)
   // the indexes are one-based, not zero based.
   // use this function get if you want to read from a const CMatrix
-  double get(const int r, const int c) const;
+  double get(const unsigned int r, const unsigned int c) const;
   
   // assignment operator
   CMatrix& operator= (const CMatrix& a); 
@@ -158,7 +158,7 @@ public:
    * returns the minor from the given CMatrix where
    * the selected row and column are removed
    */
-  CMatrix Minor(const int row, const int col) const;
+  CMatrix Minor(const unsigned int r, const unsigned int c) const;
 
   /*
    * returns the size of the i-th dimension of the CMatrix.
@@ -176,7 +176,8 @@ public:
 
   // print the contents of the CMatrix
   void Print() const;
-  
+
+ 
 public:
   // destructor
   ~CMatrix();
@@ -184,25 +185,28 @@ public:
   void CleanMatrix();
 
   int Size(const CMatrix& a, const int i);
-  CMatrix Ones(const int rows, const int cols);
-  CMatrix Zeros(const int rows, const int cols);
-  CMatrix Ident(const int rows, const int cols);
+  CMatrix Ones(const unsigned int r, const unsigned int c);
+  CMatrix Zeros(const unsigned int r, const unsigned int c);
+  CMatrix Ident(const unsigned int r, const unsigned int c);
 
   CMatrix Transpose();
   
 
 private:
-  int rows;
-  int cols;
+  unsigned int rows;
+  unsigned int cols;
   double** p;     // pointer to a CMatrix with doubles
 };
 
 
 CMatrix Inv(const CMatrix& a, bool *pRet);
+void DoAlgorithm(CMatrix &res, unsigned int rows, const CMatrix & a, unsigned int cols);
 double Det(const CMatrix& a);
 CMatrix Diag(const int n);
 CMatrix Diag(const CMatrix& v);
 void Swap(double& a, double& b);
+
+bool IsEqual(double a, double b);
 
 
  /*

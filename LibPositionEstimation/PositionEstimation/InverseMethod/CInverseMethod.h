@@ -13,20 +13,17 @@
 
 using namespace std;
 
-namespace GEO {
-	const double PIOVER2 = M_PI/2.0;
-	const double TWOPI = 6.28318530718;
-	const double DE2RA = 0.01745329252;
-	const double RA2DE = 57.2957795129;
-	const double ERAD = 6378.137;
-	const double ERADM = 6378137.0;
-	const double AVG_ERAD = 6371.0;
-	const double FLATTENING = 1.000000/298.257223563;// Earth flattening (WGS84)
-	const double EPS = 0.000000000005;
-	const double KM2MI = 0.621371;
-	const double GEOSTATIONARY_ALT = 35786.0; // km - approximate value
-}
 
+#define DE2RA	((double) 0.01745329252 )
+#define RA2DE	((double) 57.2957795129 )
+#define ERAD	((double) 6378.137 )
+#define ERADM	((double) 6378137.0 )
+#define AVG_ERAD	((double) 6371.0 )
+#define FLATTENING	((double) (1.000000/298.257223563))			// Earth flattening (WGS84)
+#define	EPS			((double) 0.000000000005 )
+#define	KM2MI		((double) 0.621371 )
+#define	GEOSTATIONARY_ALT	((double) 35786.0 )
+	
 /**
 * [식별자 : CLS-GMU-EL-L-PEA]
 *
@@ -52,15 +49,12 @@ public:
 	~CInverseMethod( );
 
 private:
-	static CInverseMethod *m_pInstance;				///< 객체 포인터
+	//static CInverseMethod *m_pInstance;				///< 객체 포인터
 	double m_dDistance;												///< 두 지점간의 거리 [km]
 	double m_dFwdAz;													///< 방위각
 	double m_dRevAz;													///< 방위각
 	
 public:
-	static CInverseMethod* GetInstance();
-	void Finalize();
-
 	bool VincentyInverse( sEllipsoid *e, double lat1, double lon1, double lat2, double lon2 );
 	int VincentyInverse( SELDISTLOB *pResult, double lat1, double lon1, double lat2, double lon2 );
 
@@ -68,8 +62,9 @@ public:
 	double GetDistance( ){ return m_dDistance; }
 
 	//두 좌표에서 서로 바라보는 방위각
-	double GetFwdAz( ){ return m_dFwdAz * R2D; }
-	double GetRevAz( ){ return m_dRevAz * R2D; }
+	//신뢰성. 파싱 에러가 떠서 주석처리함. 추후 주석 풀것. 윤현철.
+	double GetFwdAz() { return m_dFwdAz * (double)(180.0 / M_PI); }
+	double GetRevAz() { return m_dRevAz * (double)(180.0 / M_PI); }
 
 	double GCAzimuth(double lat1, double lon1, double lat2, double lon2, bool bInitialBearing=false );
 	double GCDistance(double lat1, double lon1, double lat2, double lon2);
@@ -80,4 +75,4 @@ public:
  * @def				ST_IMA
  * @brief			인스턴스 객체를 얻어온다.
  */
-#define ST_IMA	CInverseMethod::GetInstance()
+//#define ST_IMA	CInverseMethod::GetInstance()

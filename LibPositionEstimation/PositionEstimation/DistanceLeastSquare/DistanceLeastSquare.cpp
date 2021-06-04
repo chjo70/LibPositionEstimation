@@ -19,8 +19,6 @@
 
 #include "../Matrix/Matrix.h"
 
-#include "../GeoCoordConv/GeoCoordConv.h"
-#include "../Coordinate/Coordinate.h"
 
 
 /**
@@ -63,7 +61,7 @@ CDistanceLeastSquare::~CDistanceLeastSquare(void)
  * @date      2013-09-09 오후 7:04 
  * @warning   
  */
-bool CDistanceLeastSquare::Run( SELPE_RESULT *pResult, double *pUTMX, double *pUTMY, double *pLob, int nLob )
+bool CDistanceLeastSquare::Run( SELPE_RESULT *pResult, double *pUTMX, double *pUTMY, double *pLob, unsigned int nLob )
 {
 	int i;
 	double a, b, c;
@@ -77,96 +75,108 @@ bool CDistanceLeastSquare::Run( SELPE_RESULT *pResult, double *pUTMX, double *pU
 	double *ppUTMX, *ppUTMY;
 	//double dDistX, dDistY;
 
+	bool bRet;
+
     m_nLob = nLob;
 
-	memset( pResult, 0, sizeof(SELPE_RESULT) );
-	pResult->dEEP_theta = -1;
+	if (pResult != NULL) {
+		memset(pResult, 0, sizeof(SELPE_RESULT));
+		pResult->dEEP_theta = -1;
 
-// 	for( i=0 ; i < nLob ; ++i ) {
-// 		printf( "\n [%3d] 위도[%f], 경도[%f], 방위[%f]" , i, pLatitude[i], pLongitude[i], 90.-pLob[i] );
-// 	}
+		// 	for( i=0 ; i < nLob ; ++i ) {
+		// 		printf( "\n [%3d] 위도[%f], 경도[%f], 방위[%f]" , i, pLatitude[i], pLongitude[i], 90.-pLob[i] );
+		// 	}
 
-	m_pUTMX = ppUTMX = pUTMX;
-	m_pUTMY = ppUTMY = pUTMY;
+		m_pUTMX = pUTMX;
+		ppUTMX = pUTMX;
+		ppUTMY = pUTMY;
+		m_pUTMY = pUTMY;
 
-	sumA = 0.0;
-	sumB = 0.0;
-	sumB1 = 0.0;
-	sumB2 = 0.0;
-	sumC = 0.0;
-	sumD = 0.0;
-	sumE = 0.0;
-	sumG = 0.0;
+		sumA = 0.0;
+		sumB = 0.0;
+		sumB1 = 0.0;
+		sumB2 = 0.0;
+		sumC = 0.0;
+		sumD = 0.0;
+		sumE = 0.0;
+		sumG = 0.0;
 
-	// 
-	for( i=0 ; i < nLob ; ++i ) {
-		dTheta = 90.0 - *pLob;
-		dTheta = ( dTheta * M_PI ) / 180.;
-		a = sin( dTheta );
-		b = -cos( dTheta );
-		c = *pUTMX * a + *pUTMY * b;
+		// 
+		for (i = 0; i < nLob; ++i) {
+			dTheta = 90.0 - *pLob;
+			dTheta = (dTheta * M_PI) / 180.;
+			a = sin(dTheta);
+			b = -cos(dTheta);
+			c = *pUTMX * a + *pUTMY * b;
 
-		A = a * b;
-		B1 = a * a;
-		B2 = b * b;
-		D = b * c;
-		E = a * c;
+			A = a * b;
+			B1 = a * a;
+			B2 = b * b;
+			D = b * c;
+			E = a * c;
 
-		sumA = A + sumA;
-		sumB = b + sumB;
-		sumB1 = B1 + sumB1;
-		sumB2 = B2 + sumB2; 
-		sumC = c + sumC;
-		sumD = D + sumD;
-		sumE = E + sumE;
+			sumA = A + sumA;
+			sumB = b + sumB;
+			sumB1 = B1 + sumB1;
+			sumB2 = B2 + sumB2;
+			sumC = c + sumC;
+			sumD = D + sumD;
+			sumE = E + sumE;
 
-		++ pUTMX;
-		++ pUTMY;
+			++pUTMX;
+			++pUTMY;
 
-		++ pLob;
-	}
+			++pLob;
+		}
 
-	//sumA2 = sumA * sumA;
-	dDiv = (sumB1 * sumB2) - ( sumA * sumA );
+		//sumA2 = sumA * sumA;
+		dDiv = (sumB1 * sumB2) - (sumA * sumA);
 
-	pResult->dEEP_major_axis = -1.0;
-	pResult->dEEP_minor_axis = -1.0;
-	pResult->dEEP_theta = 0.0;
-	pResult->dCEP_error = -1.0;
+		pResult->dEEP_major_axis = -1.0;
+		pResult->dEEP_minor_axis = -1.0;
+		pResult->dEEP_theta = 0.0;
+		pResult->dCEP_error = -1.0;
 
-	if( dDiv > 0. || dDiv < 0. ) {
-        double dDistX, dDistY;
+		if (dDiv > 0. || dDiv < 0.) {
+			double dDistX, dDistY;
 
-		pResult->bResult = true;
+			pResult->bResult = true;
 
-        pResult->dEasting = ( (sumB2 * sumE) - (sumA * sumD ) ) / dDiv;
-        pResult->dNorthing = ( (sumB1 * sumD) - (sumA * sumE) ) / dDiv;
+			pResult->dEasting = ((sumB2 * sumE) - (sumA * sumD)) / dDiv;
+			pResult->dNorthing = ((sumB1 * sumD) - (sumA * sumE)) / dDiv;
 
-        dDistX = fabs( pResult->dEasting - ppUTMY[0] );
-        dDistY = fabs( pResult->dNorthing - ppUTMX[0] );
+			dDistX = fabs(pResult->dEasting - ppUTMY[0]);
+			dDistY = fabs(pResult->dNorthing - ppUTMX[0]);
 
-        if( /* ( dDistX < 1.00 && dDistY < 1.00 ) || dDistX > 1000000.0 || dDistY > 1000000.0 ) ||  */
-			pResult->dEasting == 0 || pResult->dNorthing == 0 ) {
-            pResult->dEasting = -1;
-            pResult->dNorthing = -1;
-            pResult->dBLongitude = -1;
-            pResult->dBLatitude = -1;
-            pResult->dLongitude = -1;
-            pResult->dLatitude = -1;
-            pResult->bResult = false;
-        }        
-        else {
-            CalAnalyticNonlinear( pResult );
-        }
+			if ( /* ( dDistX < 1.00 && dDistY < 1.00 ) || dDistX > 1000000.0 || dDistY > 1000000.0 ) ||  */
+				pResult->dEasting == 0 || pResult->dNorthing == 0) {
+				pResult->dEasting = -1;
+				pResult->dNorthing = -1;
+				pResult->dBLongitude = -1;
+				pResult->dBLatitude = -1;
+				pResult->dLongitude = -1;
+				pResult->dLatitude = -1;
+				pResult->bResult = false;
+			}
+			else {
+				CalAnalyticNonlinear(pResult);
+			}
 
+		}
+		else {
+			pResult->bResult = false;
+
+		}
+
+		bRet = pResult->bResult;
 	}
 	else {
-		pResult->bResult = false;
+		bRet = false;
 
 	}
 
+	return bRet;
 
-	return pResult->bResult;
 
 }
 

@@ -121,7 +121,7 @@ typedef struct {
 	double dEEP_theta;          // [도]
 	double dCEP_error;          // [m]
 
-	bool bResult;				// true 성공, false 실패
+	bool bResult;
 
 } SELPE_RESULT ;
 #endif
