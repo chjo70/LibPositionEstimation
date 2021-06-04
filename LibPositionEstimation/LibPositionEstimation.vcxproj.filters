@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion">
+      <UniqueIdentifier>{78331c13-27d5-4eac-b2a9-70f50a2d63f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\Quadratic">
+      <UniqueIdentifier>{3c055525-58d7-497a-9664-b8cf268845b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\DistanceLeastSquare">
+      <UniqueIdentifier>{35e82f5d-c2aa-4efa-9d49-7855a475cd13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\Matrix">
+      <UniqueIdentifier>{254d6bba-67bc-40d3-bea0-44a831ab776b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\GeoCoordConv">
+      <UniqueIdentifier>{ae5603f2-e8b4-47b1-862c-9e8ca3f28bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\UTM">
+      <UniqueIdentifier>{7182e6ef-5fc5-4a3e-8b39-c353c9eb0282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\InverseMethod">
+      <UniqueIdentifier>{2992ff1c-8eb1-42da-a9cb-5a34efdc86b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\CEP">
+      <UniqueIdentifier>{b1597282-868a-4461-b102-e8625a49f91d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\PositionEstimaion\Coordinate">
+      <UniqueIdentifier>{c56dd249-e9b6-4edc-8699-bae5524ba8a3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+    <None Include="res\LibPositionEstimation.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="res\LibPositionEstimation.ico">
+      <Filter>리소스 파일</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LibPositionEstimation.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="LibPositionEstimationDlg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\PositionEstimationAlg.h">
+      <Filter>소스 파일\PositionEstimaion</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\Quadratic\Quadratic.h">
+      <Filter>소스 파일\PositionEstimaion\Quadratic</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\DistanceLeastSquare\DistanceLeastSquare.h">
+      <Filter>소스 파일\PositionEstimaion\DistanceLeastSquare</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\Matrix\Matrix.h">
+      <Filter>소스 파일\PositionEstimaion\Matrix</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\GeoCoordConv\GeoCoordConv.h">
+      <Filter>소스 파일\PositionEstimaion\GeoCoordConv</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\UTM\UTM.h">
+      <Filter>소스 파일\PositionEstimaion\UTM</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\InverseMethod\CInverseMethod.h">
+      <Filter>소스 파일\PositionEstimaion\InverseMethod</Filter>
+    </ClInclude>
+    <ClInclude Include="RawFile.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\CEP\AnalyticCEP.h">
+      <Filter>소스 파일\PositionEstimaion\CEP</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\InverseMethod\VincentyParam.h">
+      <Filter>소스 파일\PositionEstimaion\InverseMethod</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\ELEmitterDataType.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\ELMsgDefn.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\ELUtil.h">
+      <Filter>소스 파일\PositionEstimaion</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\Coordinate\Coordinate.h">
+      <Filter>소스 파일\PositionEstimaion\Coordinate</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\IsNumber.h">
+      <Filter>소스 파일\PositionEstimaion</Filter>
+    </ClInclude>
+    <ClInclude Include="PositionEstimation\PositionEstimationDefine.h">
+      <Filter>소스 파일\PositionEstimaion</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LibPositionEstimation.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="LibPositionEstimationDlg.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\PositionEstimationAlg.cpp">
+      <Filter>소스 파일\PositionEstimaion</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\Quadratic\Quadratic.cpp">
+      <Filter>소스 파일\PositionEstimaion\Quadratic</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\DistanceLeastSquare\DistanceLeastSquare.cpp">
+      <Filter>소스 파일\PositionEstimaion\DistanceLeastSquare</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\Matrix\Matrix.cpp">
+      <Filter>소스 파일\PositionEstimaion\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\GeoCoordConv\GeoCoordConv.cpp">
+      <Filter>소스 파일\PositionEstimaion\GeoCoordConv</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\UTM\UTM.cpp">
+      <Filter>소스 파일\PositionEstimaion\UTM</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\InverseMethod\CInverseMethod.cpp">
+      <Filter>소스 파일\PositionEstimaion\InverseMethod</Filter>
+    </ClCompile>
+    <ClCompile Include="RawFile.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\CEP\AnalyticCEP.cpp">
+      <Filter>소스 파일\PositionEstimaion\CEP</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionEstimation\Coordinate\Coordinate.cpp">
+      <Filter>소스 파일\PositionEstimaion\Coordinate</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="LibPositionEstimation.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
