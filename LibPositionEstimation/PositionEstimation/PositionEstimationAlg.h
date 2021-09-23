@@ -16,15 +16,13 @@ using namespace std;
 
 #include "./PositionEstimationDefine.h"
 
-#include "./GeoCoordConv/GeoCoordConv.h"
-
-#include "./Quadratic/Quadratic.h"
+//#include "./Quadratic/Quadratic.h"
 #include "./DistanceLeastSquare/DistanceLeastSquare.h"
 #include "./LinearLS/LinearLS.h"
 #include "./NonlinearLS/NonLinearLS.h"
 
 
-#include "./Coordinate/Coordinate.h"
+//#include "./Coordinate/Coordinate.h"
 
 #include "./InverseMethod/CInverseMethod.h"
 
@@ -38,6 +36,10 @@ using namespace std;
 
 
 #define _POSITION_ESTIMATION_OPTION					(1)
+
+
+//#define D2R_DEGREE(degree) (degree * M_PI / 180.0)
+//#define R2D(radian) (radian * 180.0 / M_PI)
 
 
 
@@ -72,7 +74,7 @@ using namespace std;
  * @brief     최대 유효 거리
  * @author    조철희 (churlhee.jo@lignex1.com)
  */
-#define ERROR_CHECK_OF_MAX_DISTANCE			(700000)          // 단위 : [m]
+#define ERROR_CHECK_OF_MAX_DISTANCE			(3000000)          // 단위 : [m]
 
 /**
  * @def       ERROR_CHECK_OF_MIN_DISTANCE
@@ -106,7 +108,7 @@ private:
 
     // 위치 산출 알고리즘 
 	CDistanceLeastSquare m_theDistanceLeastSquare;
-	CQuadratic m_theQuadratric;
+	//CQuadratic m_theQuadratric;
 
     CInverseMethod m_theInverseMethod;
 
@@ -116,7 +118,7 @@ private:
 	double *m_pLob;																			///< 위치 산출 라이브러리에 사용할 LOB 데이터
 	SELSensorPosition m_Sensor;													///< 위치 산출 라이브러리에 사용할 항공기 센서 좌표
 
-	CGeoCoordConv m_theGeoCoordConv;
+	//CGeoCoordConv m_theGeoCoordConv;
 
 	STR_LOBS *m_pR1;
 	STR_LOBS *m_pR2;
@@ -144,14 +146,14 @@ public:
 
 	static void ReleaseInstance();
 
-	void ConvertLatLong2( int nLob, SELSensorPosition *pSensor );
+	void ConvertLatLong2( unsigned int nLob, SELSensorPosition *pSensor );
 
     void RunPositionEstimation( SELPE_RESULT *pSELPE_RESULT, int nLob, STR_LOBS *pstrLOB );
-	void RunPositionEstimation( STR_POSITION_ESTIMATION *pPEInfo, SELABTDATA_EXT *pABTExtData, std::vector<STR_LOBS> *pVecLOB );
+	//void RunPositionEstimation( STR_POSITION_ESTIMATION *pPEInfo, SELABTDATA_EXT *pABTExtData, std::vector<STR_LOBS> *pVecLOB );
 
 	void RunPositionEstimation( SELPE_RESULT *pSELPE_RESULT, std::vector<STR_LOBS> *pVecLOB );
 
-	double EstimatedAltitude( SEnuPos *pstEnuPos );
+	//double EstimatedAltitude( SEnuPos *pstEnuPos );
 	//////////////////////////////////////////////////////////////////////////
 
 private:
@@ -171,13 +173,15 @@ private:
 
 	//bool AllocateBuffer( int isize );
 	//void ReleaseBuffer();
-
+	double FuncD2R(double i_dbDegree);
 	void AllocSensors( int nLob );
 	void CommonRunPositionEstimation( SELPE_RESULT *pSELPE_RESULT, STR_POSITION_ESTIMATION *pPEInfo=NULL );
 	void FreeSensors();
 	float M2Map( int iEEPTiltAngle );
 
 	bool IsVerifyLOB();
+
+	bool IsEqual(double a, double b);
 
 };
 
