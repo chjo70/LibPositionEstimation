@@ -480,15 +480,15 @@ void CMatrix::Print() const
 			}
 			for (unsigned int c = 0; c < cols-1; c++)
 			{
-				TRACE1("%.6f, ", p[r][c]);
+				TRACE1("%.6e, ", p[r][c]);
 			}
 			if (r < (unsigned int ) ( rows-1) )
 			{
-				TRACE1("%.6f;\n", p[r][cols-1]);
+				TRACE1("%.6e;\n", p[r][cols-1]);
 			}
 			else
 			{
-				TRACE1("%.6f]\n", p[r][cols-1]);
+				TRACE1("%.6e]\n", p[r][cols-1]);
 			}
 		}
 	}
@@ -803,7 +803,9 @@ void DoAlgorithm(CMatrix &res, unsigned int rows, const CMatrix & a, unsigned in
 		//for (r = c; r <= rows && ai(r, c) == 0 ; r++)
 		for (r = c; r <= rows && IsEqual( ai(r, c), 0 ) == true ; r++)
 		{
-			//DoNothing();
+#ifndef _DEBUG
+			// DoNothing();
+#endif
 		}
 		if (r != c)
 		{

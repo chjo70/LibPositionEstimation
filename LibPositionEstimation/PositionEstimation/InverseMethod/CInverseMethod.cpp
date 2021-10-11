@@ -134,7 +134,9 @@ bool CInverseMethod::VincentyInverse( sEllipsoid *e, double lat1, double lon1, d
 	{
 		if (iterLimit == 0) 
 		{ //DTEC_Else
-			//DoNothing();//return false; // formula failed to converge
+#ifndef _DEBUG
+			// DoNothing();//return false; // formula failed to converge
+#endif
 		}
 		else
 		{
@@ -318,7 +320,9 @@ double CInverseMethod::GCAzimuth(double lat1, double lon1, double lat2, double l
 	if ((ilat1 == ilat2) && (ilon1 == ilon2))
 	{	//DTEC_Else
 		//return result;
-		//DoNothing();
+#ifndef _DEBUG
+		// DoNothing();
+#endif
 	}
 	else if (ilon1 == ilon2)
 	{	//DTEC_Else

@@ -61,81 +61,90 @@ bool CAnalyticCEP::CalAnalyticNonlinear( SELPE_RESULT *pResult )
     int i;
     bool bRet=true;
 
-    double dSigma;
-
-    double dM, dN, dDiv;
-
     double *pUTMX, *pUTMY;
+
+    double dAoaSquare;
 
     pUTMX = m_pUTMX;
     pUTMY = m_pUTMY;
 
-    pResult->dEEP_major_axis = -1;
-    pResult->dEEP_minor_axis = -1;
-    pResult->dEEP_theta = -1;
-    pResult->dCEP_error = -1;
+    /* 테스트 */
+//     pUTMX[0] = -100000;
+//     pUTMY[0] = 0;
+//     pUTMX[1] = 0;
+//     pUTMY[1] = 0;
+//     pUTMX[2] = -100000;
+//     pUTMY[2] = 100000;
+//     pResult->dEasting = 33019;
+//     pResult->dNorthing = 103360;
+// 
+//     pResult->dEEP_major_axis = -1;
+//     pResult->dEEP_minor_axis = -1;
+//     pResult->dEEP_theta = -1;
+//     pResult->dCEP_error = -1;
 
-	if (m_nLob > 1) {
+	if (m_nLob > 1 ) {
 		try
 		{
-			CMatrix theX(2, m_nLob), theInvW(m_nLob, m_nLob);
+            double divM, dMHat, dNHat, dU;
+            CMatrix theH( m_nLob, 2 );
+            CMatrix theQ, theW, theInvW, theTransH;
 
-			for (i = 1; i <= m_nLob; ++i) {
-				dM = pResult->dEasting - *pUTMX;
-				dN = pResult->dNorthing - *pUTMY;
+            dAoaSquare = DEGREE2RADIAN( AOA_VARIANCE );
+            dAoaSquare = dAoaSquare * dAoaSquare;
 
-				dDiv = (dM * dM) + (dN * dN);
-				theX(1, i) = dN / dDiv;
-				theX(2, i) = dM / dDiv;
+            for( i=1 ; i <= m_nLob ; ++i ) {
+                dMHat = pResult->dEasting - *pUTMX;
+                dNHat = pResult->dNorthing - *pUTMY;
+                dU = dNHat / dMHat;
 
-				++pUTMX;
-				++pUTMY;
-			}
+                divM = ( 1 + dU * dU ) * dMHat;
+                theH( i, 1 ) = - dU / divM;
+                theH( i, 2 ) = 1. / divM;
 
-			theX.Print();
+                ++pUTMX;
+                ++pUTMY;
+            }
 
-			//theInvW = ( 1. / sigma_doa * M_PI / 180. ) * theInvW.Ident(m_nLob, m_nLob );
-			//theInvW.Print();
-			dSigma = DEGREE2RADIAN(_SIGMA_OF_DOA_ * _SIGMA_OF_DOA_);
+            // theH.Print();
+            
+            theW = theW.Ident( m_nLob, m_nLob ) * dAoaSquare;
+            theInvW = Inv( theW, & bRet );
+            theTransH = theH.Transpose();
+            theQ = theTransH * theInvW * theH;
+            theQ = Inv( theQ, & bRet );
 
-			CMatrix theQ, theXt;
+            //theQ.Print();
 
-			theXt = theX.Transpose();
-			theQ = theX * theXt;
-			theQ.Print();
+			double dC = -2.0 * log(1 - 0.99);
+			double dSigma_x_square, dSigma_y_square, dRho_xy, dRanda1, dRanda2, dSqaure, dSigma_xy_square;
 
-			theQ = Inv(theQ, &bRet);
-			theQ.Print();
+ 			dSigma_x_square = theQ.get(1, 1);
+ 			dSigma_y_square = theQ.get(2, 2);
+ 			dRho_xy = theQ.get(2, 1);
 
-			theQ = dSigma * theQ;
-			theQ.Print();
+			dSigma_xy_square = (dSigma_x_square + dSigma_y_square);
+            dSqaure = (dSigma_x_square - dSigma_y_square);
+			dSqaure = ( dSqaure * dSqaure ) + ( 4 * dRho_xy * dRho_xy );
+ 			dRanda1 = 0.5 * (dSigma_xy_square + sqrt(dSqaure));
+			dRanda2 = 0.5 * (dSigma_xy_square - sqrt(dSqaure));
 
-			double dPe = -2.0 * log(1 - 0.5);
-			double dSigma_x_square, dSigma_y_square, dRho_xy, dA_square, dB_square, dSqaure;
+			//char szBuffer[100];
+			pResult->dEEP_theta = RADIAN2DEGREE( 0.5 * atan2( (2. * dRho_xy), (dSigma_x_square - dSigma_y_square) ) );
+			//sprintf_s( szBuffer, "\n 기울기 : %.2f", pResult->dEEP_theta );
+			//::OutputDebugString(szBuffer);
 
-			dSigma_x_square = theQ.get(1, 1);
-			dSigma_y_square = theQ.get(2, 2);
-			dRho_xy = theQ.get(2, 1);
+// 			if (dSigma_x_square - dSigma_y_square < 0) {
+// 			    pResult->dEEP_theta = 90.0 - pResult->dEEP_theta;
+// 			}
+// 			else {
+// 				pResult->dEEP_theta = 90.0 - pResult->dEEP_theta + 90.0;
+// 			}
 
-			dSqaure = (dSigma_x_square - dSigma_y_square);
-			dSqaure *= dSqaure;
-			dSqaure += (4.0 * dRho_xy * dRho_xy);
-			dA_square = 0.5 * (dSigma_x_square + dSigma_y_square + sqrt(dSqaure));
-			dB_square = 0.5 * (dSigma_x_square + dSigma_y_square - sqrt(dSqaure));
+			pResult->dEEP_major_axis = sqrt( dRanda1 * dC ) / 1000.;
+			pResult->dEEP_minor_axis = sqrt( dRanda2 * dC ) / 1000.;
 
-			pResult->dEEP_theta = RADIAN2DEGREE(0.5 * atan((2. * dRho_xy) / (dSigma_x_square - dSigma_y_square)));
-			pResult->dEEP_theta = 90.0 - pResult->dEEP_theta;
-
-			if (dA_square > dB_square) {
-				pResult->dEEP_major_axis = sqrt(dA_square * dPe) / 2. / 1000.;
-				pResult->dEEP_minor_axis = sqrt(dB_square * dPe) / 2. / 1000.;
-			}
-			else {
-				pResult->dEEP_major_axis = sqrt(dB_square * dPe) / 2. / 1000.;
-				pResult->dEEP_minor_axis = sqrt(dA_square * dPe) / 2. / 1000.;
-			}
-
-			pResult->dCEP_error = 0.75 * sqrt(dA_square + dB_square) / 2. / 1000.;
+			pResult->dCEP_error = 0.75 * sqrt( dRanda1 + dRanda2 ) / 2. / 1000.;
 		}
 		catch (Exception err) {
 			bRet = false;

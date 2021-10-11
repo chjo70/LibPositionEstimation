@@ -11,7 +11,7 @@
 
 // 방탐 분산값
 // Analytic CEP를 계산하기 위한 측정값
-#define AOA_VARIANCE									(1)						// 단위 : degree
+#define AOA_VARIANCE					(1)						// 단위 : degree
 
 // CEP/EEP 확률 정의
 #define PROBABILITY_OF_BEING_INSIDE		(50)					// 단위 : %

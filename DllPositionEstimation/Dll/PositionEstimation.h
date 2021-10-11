@@ -49,10 +49,10 @@ typedef struct {
 
 	//unsigned int time_sec;
 
-	double dEEP_major_axis;     // [m]
-	double dEEP_minor_axis;     // [m]
-	double dEEP_theta;          // [도]
-	double dCEP_error;          // [m]
+	double dEEP_major_axis;     // [m] 반장축
+	double dEEP_minor_axis;     // [m] 반단축
+	double dEEP_theta;          // [도] 기울기, 반장축을 수평각으로 해서 기울기
+	double dCEP_error;          // [m], 운형 반지름
 
 	bool bResult;
 

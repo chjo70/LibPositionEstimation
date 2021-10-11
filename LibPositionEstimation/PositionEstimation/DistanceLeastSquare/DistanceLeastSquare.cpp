@@ -149,7 +149,7 @@ bool CDistanceLeastSquare::Run( SELPE_RESULT *pResult, double *pUTMX, double *pU
 			dDistY = fabs(pResult->dNorthing - ppUTMX[0]);
 
 			if ( /* ( dDistX < 1.00 && dDistY < 1.00 ) || dDistX > 1000000.0 || dDistY > 1000000.0 ) ||  */
-				pResult->dEasting == 0 || pResult->dNorthing == 0) {
+				pResult->dEasting == 0 || pResult->dNorthing == 0 /* || pResult->dEasting < 0 */ ) {
 				pResult->dEasting = -1;
 				pResult->dNorthing = -1;
 				pResult->dBLongitude = -1;

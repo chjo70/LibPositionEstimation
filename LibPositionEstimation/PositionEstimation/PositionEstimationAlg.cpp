@@ -72,6 +72,22 @@ CPositionEstimationAlg::CPositionEstimationAlg(void)
     //m_stOrgLlh.hgt = ORG_ENU_HEIGHT;
 
 //#endif
+//     int i;
+//     SELPE_RESULT stResult;
+// 
+//     char szBuffer[1000];
+// 
+//     stResult.dBLatitude = 38.0;
+//     stResult.dBLongitude = 120.0;
+// 
+//     TRACE( "S52" );
+//     for( i=110 ; i < 140 ; ++i ) {
+//         stResult.dBLongitude = (double) i;
+//         LatLonToUTMXY( stResult.dBLatitude, stResult.dBLongitude, (int) (52), stResult.dEasting, stResult.dNorthing );
+// 
+//         sprintf( szBuffer, "\n 위도:%.2f, 경도:%.2f -> X : %.2f, Y : %.2f" , stResult.dBLatitude, stResult.dBLongitude, stResult.dEasting, stResult.dNorthing );
+//         TRACE( szBuffer );
+//     }
 
 }
 
@@ -308,15 +324,15 @@ void CPositionEstimationAlg::VerifyOfPositionEstimation( SELPE_RESULT *pResult )
 	}
 }
 
-#define STEP_LONGITUDE			(0.0020)
-#define STEP_LATITUDE			(0.0020)
+#define STEP_LONGITUDE			0.1 // (0.0020)
+#define STEP_LATITUDE			0.1 // (0.0020)
 #define	TRY_OF_COMPENSATION	    (400)
 #define THRESHOLD_STEP_LL       (0.000001)
-#define THRESHOLD_DELTA_MEASURE (0.0001)
+#define THRESHOLD_DELTA_MEASURE (0.00001)
 
 int compDM( const void *pA, const void *pB )
 {
-    int iRet;
+    int iRet=0;
 
     //_COMPENSATION_LL_ *ppA = ( _COMPENSATION_LL_ * ) pA;
     //_COMPENSATION_LL_ *ppB = ( _COMPENSATION_LL_ * ) pB;
@@ -328,7 +344,6 @@ int compDM( const void *pA, const void *pB )
 		iRet = 1;
 	}
     else {
-		iRet = 0;
 
     }
 
@@ -389,8 +404,6 @@ void CPositionEstimationAlg::CompensationOfPositionEstimation( SELPE_RESULT *pSE
         pSELPE_RESULT->dLongitude = ll[0].dLongitude;
         pSELPE_RESULT->dLatitude = ll[0].dLatitude;
 
-		//CalcAllDeltaTheta(pSELPE_RESULT->dLongitude, pSELPE_RESULT->dLatitude);
-
     }
 
 }
@@ -445,7 +458,7 @@ bool CPositionEstimationAlg::IsEqual(double a, double b)
 	return bRet;
 }
 
-static char g_szDirection[9][10]={ "좌상", "좌측", "좌하", "위  ", "현재", "아래", "우상", "우측", "우하" } ;
+//static char g_szDirection[9][10]={ "좌상", "좌측", "좌하", "위  ", "현재", "아래", "우상", "우측", "우하" } ;
 
 /**
  * @brief     SelfCall_2Compensate
@@ -461,7 +474,8 @@ static char g_szDirection[9][10]={ "좌상", "좌측", "좌하", "위  ", "현재", "아래
 double CPositionEstimationAlg::SelfCall_2Compensate( _COMPENSATION_LL_ *pll )
 {
     int i, j;
-        
+    //char szConsole[300];
+    
     double dMinDm, dM;
 
     double dLongitude=pll->dLongitude, dLatitude=pll->dLatitude;
@@ -483,12 +497,11 @@ double CPositionEstimationAlg::SelfCall_2Compensate( _COMPENSATION_LL_ *pll )
     }
 
     // 값을 출력
-	char szConsole[300];
-	i = 0;
-	i += sprintf_s(szConsole, sizeof(szConsole), "\n#%03d [%.5f/%.5f][%s %.6f,%.6f] %8.4f ", m_TryCompensation, m_dStepLongitude, m_dStepLatitude, g_szDirection[pll->iQuardant], pll->dLatitude, pll->dLongitude, pll->dM);
+	//i = 0;
+	//i += sprintf_s(szConsole, sizeof(szConsole), "\n#%03d [%.5f/%.5f][%s %.6f,%.6f] %8.4f ", m_TryCompensation, m_dStepLongitude, m_dStepLatitude, g_szDirection[pll->iQuardant], pll->dLatitude, pll->dLongitude, pll->dM);
 
-	szConsole[i] = 0;
-	TRACE0(szConsole);
+	//szConsole[i] = 0;
+	//::OutputDebugString(szConsole);
 
     return pll->dM;
 
@@ -691,6 +704,7 @@ void CPositionEstimationAlg::RunPositionEstimation( SELPE_RESULT *pSELPE_RESULT,
 			dInitPosRad[0] = 0.;
 			dInitPosRad[1] = 0.;
 		}
+
 
 		ConvertLatLong2( m_nLob, & m_Sensor );
 

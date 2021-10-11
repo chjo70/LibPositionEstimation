@@ -5,7 +5,7 @@
 #ifdef _GD_PROJECT_
 #define	_SIGMA_OF_DOA_			(1.0)
 #else
-#define	_SIGMA_OF_DOA_			(1.0)
+#define	_SIGMA_OF_DOA_			(0.5)
 
 #endif
 

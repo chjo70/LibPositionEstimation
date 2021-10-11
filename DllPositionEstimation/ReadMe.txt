@@ -3,6 +3,21 @@
 ========================================================================
 
 
+빌드 방법 
+
+1. Debug, x64
+
+	프로젝트에서 Debug, x64로 선택 후 빌드 한다. 
+	그리고 ./Debug 폴더에서 DllPositionEstimationD.dll, DllPositionEstimationD.pch, DllPositionEstimationD.lib 를 복사한다.
+
+2. Release, x64
+
+	프로젝트에서 Release, x64로 선택 후 빌드 한다. 
+	그리고 ./Release 폴더에서 DllPositionEstimationD.dll, DllPositionEstimationD.pch, DllPositionEstimationD.lib 를 복사한다.
+
+
+
+
 응용 프로그램 마법사에서 이 DllPositionEstimation DLL을 만들었습니다.  이 DLL은
 MFC의 기본 사용법을 보여 줄 뿐만 아니라 DLL을 작성하기 위한 기본 구조를 제공합니다.
 
